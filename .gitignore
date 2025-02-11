@@ -1,0 +1,25 @@
+# Environment variables
+.env
+
+# Service account credentials
+service_account.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# History
+.history/
