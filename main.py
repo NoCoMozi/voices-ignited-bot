@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+print(f"DEBUG: Bot token loaded: {'YES' if BOT_TOKEN else 'NO'}")
+print(f"DEBUG: Token starts with: {BOT_TOKEN[:10] + '...' if BOT_TOKEN else 'None'}")
 
 class QuizBot:
     def __init__(self):
@@ -52,20 +54,33 @@ class QuizBot:
             raise
         
     def start(self, update: Update, context: CallbackContext):
-        welcome_message = (
-            "Hello and welcome to Voices Ignited! 🔥\n\n"
-            "We are a movement fighting for a government that truly serves its people, not corporations.\n"
-            "This short quiz will help us understand your values and how you'd like to contribute.\n"
-            "Let's stand together for justice, equality, and real change—let's get started! 🚀\n\n"
-            "Use /quiz to begin!"
-        )
-        update.message.reply_text(welcome_message)
+        print("DEBUG: /start command received")
+        try:
+            welcome_message = (
+                "Hello and welcome to Voices Ignited! 🔥\n\n"
+                "We are a movement fighting for a government that truly serves its people, not corporations.\n"
+                "This short quiz will help us understand your values and how you'd like to contribute.\n"
+                "Let's stand together for justice, equality, and real change—let's get started! 🚀\n\n"
+                "Use /quiz to begin!"
+            )
+            print("DEBUG: Sending welcome message")
+            print(f"DEBUG: Chat ID = {update.message.chat_id}")
+            result = update.message.reply_text(welcome_message)
+            print("DEBUG: Welcome message sent successfully")
+        except Exception as e:
+            print(f"DEBUG: Error in start command: {str(e)}")
+            logger.error(f"Error in start command: {str(e)}")
         
     def quiz(self, update: Update, context: CallbackContext):
         # Clear any previous quiz data
         context.user_data['current_question'] = 0
         context.user_data['answers'] = {}
         context.user_data['message_ids'] = []
+        
+        # Store user info at the start
+        user = update.message.from_user
+        context.user_data['user_id'] = user.id
+        context.user_data['username'] = user.username
         
         # Store the /quiz command message for cleanup
         context.user_data['message_ids'].append(update.message.message_id)
@@ -158,10 +173,11 @@ class QuizBot:
         answers = context.user_data.get('answers', {})
         row = []
         
-        # Add user information (username or ID)
-        user = message.from_user
-        username = f"@{user.username}" if user.username else f"id:{user.id}"
-        row.append(username)
+        # Add user information from stored data
+        username = context.user_data.get('username')
+        user_id = context.user_data.get('user_id')
+        identifier = f"@{username}" if username else f"id:{user_id}"
+        row.append(identifier)
         
         # Format answers in order
         for i in range(len(self.questions)):
@@ -188,11 +204,14 @@ class QuizBot:
     def run(self):
         try:
             logger.info("Starting bot...")
+            print("DEBUG: Bot starting up...")
             self.updater.start_polling()
+            print("DEBUG: Bot polling started")
             logger.info("Bot started successfully")
             self.updater.idle()
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
+            print(f"DEBUG: Error running bot: {str(e)}")
             raise
 
 if __name__ == '__main__':

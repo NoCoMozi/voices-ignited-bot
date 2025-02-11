@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Voices Ignited Quiz Bot 
 
 A Telegram bot that helps collect responses from potential movement members through an interactive quiz. The responses are automatically saved to a Google Sheet for easy analysis.
@@ -59,3 +60,7 @@ Feel free to submit issues and pull requests to improve the bot.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+=======
+# voices-ignited-bot
+A Telegram bot for collecting responses through an interactive quiz
+>>>>>>> 978d8180d2ce1524d1463312908868931f9be321
